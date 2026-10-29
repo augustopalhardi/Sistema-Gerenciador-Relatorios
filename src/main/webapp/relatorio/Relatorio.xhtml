@@ -1,0 +1,401 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Relatórios" />
+	<ui:param name="css" value="css/Relatorio.css" />
+	<ui:param name="mostrarRodape" value="false" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-simples.xhtml">
+			<ui:param name="titulo" value="Relatórios Técnicos" />
+			<ui:param name="voltarHistorico" value="true" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+	<div class="container">
+		<h:form id="relatorioForm" enctype="multipart/form-data">
+			<div class="buttons buttons-topo">
+				<p:commandButton value="Salvar Relatório"
+					action="#{relatorioBean.salvar()}" update="@form growlMsgs"
+					styleClass="btn btn-primary" icon="pi pi-save"
+					 />
+			</div>
+
+			<!-- DADOS DO CLIENTE (obrigatorios: cliente e titulo) -->
+			<div class="form-section">
+				<h2 class="section-title">Dados do Cliente</h2>
+
+				<div class="field">
+					<label>Nome do Cliente: <span style="color:#e53e3e;">*obrigatório</span></label>
+					<p:selectOneMenu id="cliente" value="#{relatorioBean.clienteSelecionadoId}" style="width:100%;">
+						<f:selectItem itemLabel="Selecione um cliente..." itemValue="#{null}" />
+						<f:selectItems value="#{relatorioBean.clientesDisponiveis}" var="cli"
+							itemLabel="#{cli.nomeEmpresa}" itemValue="#{cli.id}" />
+					</p:selectOneMenu>
+				</div>
+
+				<div class="form-grid">
+					<div class="field">
+						<label>Data do Atendimento - Início:</label>
+						<p:calendar id="dataInicio" value="#{relatorioBean.relatorio.dataInicio}"
+							pattern="dd/MM/yyyy" placeholder="Selecione a data (opcional)" />
+					</div>
+					<div class="field">
+						<label>Data do Atendimento - Término:</label>
+						<p:calendar id="dataTermino" value="#{relatorioBean.relatorio.dataTermino}"
+							pattern="dd/MM/yyyy" placeholder="Selecione a data (opcional)" />
+					</div>
+				</div>
+
+				<div class="field">
+					<label>Responsável Téc. Cliente:</label>
+					<p:inputText value="#{relatorioBean.relatorio.responsavelTecCliente}"
+						maxlength="200" placeholder="Nome do responsável técnico do cliente (opcional)" style="width:100%;" />
+				</div>
+
+				<div class="field">
+					<label>Observações:</label>
+					<p:inputTextarea value="#{relatorioBean.relatorio.observacao}" rows="4"
+						placeholder="Observações gerais sobre o atendimento (opcional)" />
+				</div>
+			</div>
+
+			<!-- DADOS DO RELATORIO -->
+			<div class="form-section">
+				<h2 class="section-title">Dados do Relatório</h2>
+
+				<div class="field">
+					<label>Responsável Técnico:</label>
+					<p:inputText value="#{relatorioBean.relatorio.responsavelTecnico}"
+						maxlength="200" placeholder="Nome do responsável técnico da sua empresa (opcional)" style="width:100%;" />
+				</div>
+
+				<div class="field">
+					<label>Título do Relatório: <span style="color:#e53e3e;">*obrigatório</span></label>
+					<p:inputText value="#{relatorioBean.relatorio.titulo}"
+						maxlength="300" placeholder="Título do relatório técnico" style="width:100%;" />
+				</div>
+			</div>
+
+			<!-- SECOES DE TEXTO (opcionais) -->
+			<div class="form-section">
+				<h2 class="section-title">Seções do Relatório</h2>
+
+				<div class="field">
+					<label>Apresentação:</label>
+					<p:inputTextarea value="#{relatorioBean.relatorio.apresentacao}" rows="4"
+						placeholder="Descreva a apresentação do relatório (opcional)" />
+				</div>
+
+				<div class="field">
+					<label>Escopo do Atendimento:</label>
+					<p:inputTextarea value="#{relatorioBean.relatorio.escopo}" rows="4"
+						placeholder="Descreva o escopo do atendimento (opcional)" />
+				</div>
+
+				<div class="field">
+					<label>Introdução:</label>
+					<p:inputTextarea value="#{relatorioBean.relatorio.introducao}" rows="4"
+						placeholder="Descreva a introdução do relatório (opcional)" />
+				</div>
+
+				<div class="field">
+					<label>Conclusão dos Trabalhos:</label>
+					<p:inputTextarea value="#{relatorioBean.relatorio.conclusao}" rows="4"
+						placeholder="Descreva a conclusão dos trabalhos (opcional)" />
+				</div>
+
+				<div class="field">
+					<label>Recomendações Gerais:</label>
+					<p:inputTextarea value="#{relatorioBean.relatorio.recomendacoes}" rows="4"
+						placeholder="Descreva as recomendações gerais (opcional). Separe cada recomendação em uma linha." />
+				</div>
+			</div>
+
+			<!-- FOTOS DE CAMPO PENDENTES -->
+			<p:outputPanel id="painelFotosCampo" layout="block">
+
+			    <div class="form-section fotos-campo-section"
+			         style="#{not (relatorioBean.modoEdicao and relatorioBean.temFotosCampoPendentes) ? 'display:none;' : ''}">
+
+			        <div class="fotos-campo-header">
+			            <h2 class="section-title">&#128247; Fotos do Campo
+			                <span class="badge-pendentes">#{relatorioBean.fotosCampoPendentes.size()}</span>
+			            </h2>
+			            <p:commandButton value="&#8635; Recarregar"
+			                action="#{relatorioBean.carregarFotosCampoPendentes()}"
+			                update=":relatorioForm:painelFotosCampo growlMsgs"
+			                process="@this"
+			                styleClass="btn-recarregar-fotos"
+			                icon="pi pi-refresh" />
+			        </div>
+
+			        <p class="fotos-campo-instrucao">
+			            Selecione o tópico destino de cada foto e clique em <strong>Alocar</strong>.
+			        </p>
+
+			        <div class="fotos-campo-lista">
+			            <ui:repeat value="#{relatorioBean.fotosCampoPendentes}" var="fotoCampo" varStatus="fcStatus">
+
+			                <div class="foto-campo-row">
+
+			                    <div class="foto-campo-thumb-wrap">
+			                        <img src="#{request.contextPath}#{fotoCampo.urlFoto}"
+			                             alt="Foto #{fcStatus.index + 1}"
+			                             class="foto-campo-thumb"
+			                             onclick="abrirFotoAmpliada(this.src)"
+			                             title="Clique para ampliar" />
+			                        <span class="foto-campo-num">#{fcStatus.index + 1}</span>
+			                    </div>
+
+			                    <div class="foto-campo-info">
+
+			                        <div class="foto-campo-meta-row">
+			                            <span class="foto-campo-legenda">
+			                                <h:outputText value="#{fotoCampo.legenda != null and fotoCampo.legenda != '' ? fotoCampo.legenda : 'Sem legenda'}" />
+			                            </span>
+			                            <span class="foto-campo-data">
+			                                <h:outputText value="#{fotoCampo.dataUpload}">
+			                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+			                                </h:outputText>
+			                                <h:outputText rendered="#{fotoCampo.usuario != null}"
+			                                              value=" · #{fotoCampo.usuario.nome}" />
+			                            </span>
+			                        </div>
+
+			                        <div class="foto-campo-controles">
+			                            <div class="foto-campo-selects">
+			                                <p:selectOneMenu id="topicoSelect_#{fcStatus.index}"
+			                                    value="#{relatorioBean.fotoTopicoIndexMap[fotoCampo.id]}"
+			                                    styleClass="foto-campo-select">
+			                                    <p:ajax event="change"
+			                                        update=":relatorioForm:painelFotosCampo growlMsgs"
+			                                        process=":relatorioForm:painelFotosCampo"
+			                                        listener="#{relatorioBean.onTopicoFotoChange(fotoCampo.id)}" />
+			                                    <f:selectItem itemLabel="-- Tópico destino --" itemValue="-1" />
+			                                    <f:selectItems value="#{relatorioBean.opcoesTopico}" />
+			                                </p:selectOneMenu>
+
+			                                <p:selectOneMenu id="subtopicoSelect_#{fcStatus.index}"
+			                                    value="#{relatorioBean.fotoSubtopicoIndexMap[fotoCampo.id]}"
+			                                    styleClass="foto-campo-select">
+			                                    <f:selectItem itemLabel="-- Subtópico (opcional) --" itemValue="-1" />
+			                                    <f:selectItems value="#{relatorioBean.getOpcoesSubtopicoParaFoto(fotoCampo.id)}" />
+			                                </p:selectOneMenu>
+			                            </div>
+
+			                            <div class="foto-campo-btns">
+			                                <p:commandButton value="Alocar"
+			                                    action="#{relatorioBean.alocarFotoNoTopico(fotoCampo.id)}"
+			                                    update=":relatorioForm:painelFotosCampo :relatorioForm:topicosPanel growlMsgs"
+			                                    process="@form"
+			                                    styleClass="btn-alocar-foto"
+			                                    icon="pi pi-check" />
+			                                <p:commandButton
+			                                    action="#{relatorioBean.descartarFotoCampo(fotoCampo.id)}"
+			                                    update=":relatorioForm:painelFotosCampo growlMsgs"
+			                                    process="@this"
+			                                    styleClass="btn-descartar-foto"
+			                                    icon="pi pi-trash"
+			                                    title="Descartar foto">
+			                                    <p:confirm header="Descartar foto"
+			                                               message="Descartar esta foto de campo? Ela será excluída definitivamente."
+			                                               icon="pi pi-exclamation-triangle" />
+			                                </p:commandButton>
+			                            </div>
+			                        </div>
+
+			                    </div>
+
+			                </div>
+
+			            </ui:repeat>
+			        </div>
+
+			    </div>
+			</p:outputPanel>
+
+			<!-- DESCRICAO DAS ATIVIDADES REALIZADAS (topicos, opcionais) -->
+			<div class="form-section">
+				<h2 class="section-title">Descrição das Atividades Realizadas</h2>
+
+				<p:outputPanel id="topicosPanel">
+					<ui:repeat value="#{relatorioBean.topicosEdicao}" var="topico" varStatus="ts">
+						<div class="topico-card">
+							<div class="topico-header">
+								<span class="topico-numero">Tópico ##{ts.index + 1}</span>
+								<p:commandButton value="Remover Tópico"
+									action="#{relatorioBean.removerTopico(ts.index)}"
+									update=":relatorioForm:topicosPanel growlMsgs"
+									process=":relatorioForm"
+									styleClass="btn-remove" icon="pi pi-trash">
+									<p:confirm header="Remover tópico"
+										message="Remover o tópico #{ts.index + 1} com seus subtópicos e imagens? A remoção só é gravada ao salvar o relatório."
+										icon="pi pi-exclamation-triangle" />
+								</p:commandButton>
+							</div>
+
+							<div class="field">
+								<label>Título do Tópico:</label>
+								<p:inputText value="#{topico.titulo}" placeholder="Título do tópico" style="width:100%;" />
+							</div>
+
+							<div class="field">
+								<label>Conteúdo:</label>
+								<p:textEditor secure="true" value="#{topico.conteudo}" height="200"
+									placeholder="Digite o conteúdo do tópico aqui..." />
+							</div>
+
+							<div class="imagens-section">
+								<label class="imagens-label">Imagens do Tópico:</label>
+
+								<div class="imagens-preview">
+									<ui:repeat value="#{topico.listaImagens}" var="imgUrl" varStatus="imgStatus">
+										<div class="imagem-item">
+											<img src="#{request.contextPath}#{imgUrl}"
+												 alt="Imagem #{imgStatus.index + 1}"
+												 class="imagem-thumb"
+												 onclick="abrirFotoAmpliada(this.src)"
+												 title="Clique para ampliar" />
+											<span class="imagem-num">Foto #{imgStatus.index + 1}</span>
+											<p:commandButton icon="pi pi-times" styleClass="btn-remove-img"
+												action="#{relatorioBean.removerImagemTopico(ts.index, imgStatus.index)}"
+												update=":relatorioForm:topicosPanel growlMsgs" process=":relatorioForm"
+												title="Remover imagem" />
+										</div>
+									</ui:repeat>
+								</div>
+
+								<div class="upload-inline">
+									<p:fileUpload mode="simple" value="#{relatorioBean.imagemTopicoUpload}"
+										skinSimple="true" accept=".jpg,.jpeg,.png,.gif" chooseLabel="Escolher Foto" />
+
+									<p:commandButton value="Adicionar Foto"
+										action="#{relatorioBean.uploadImagemTopico()}"
+										update=":relatorioForm:topicosPanel growlMsgs"
+										process=":relatorioForm" styleClass="btn-upload-img" icon="pi pi-image">
+										<f:setPropertyActionListener target="#{relatorioBean.topicoUploadIndex}" value="#{ts.index}" />
+									</p:commandButton>
+								</div>
+							</div>
+
+							<ui:repeat value="#{topico.subtopicos}" var="subtopico" varStatus="ss">
+								<div class="subtopico-card">
+									<div class="subtopico-header">
+										<span class="subtopico-numero">Subtópico #{ts.index + 1}.#{ss.index + 1}</span>
+										<p:commandButton value="Remover"
+											action="#{relatorioBean.removerSubtopico(ts.index, ss.index)}"
+											update=":relatorioForm:topicosPanel growlMsgs"
+											process=":relatorioForm"
+											styleClass="btn-remove-sub" icon="pi pi-times">
+											<p:confirm header="Remover subtópico"
+												message="Remover o subtópico #{ts.index + 1}.#{ss.index + 1} e suas imagens? A remoção só é gravada ao salvar o relatório."
+												icon="pi pi-exclamation-triangle" />
+										</p:commandButton>
+									</div>
+
+									<div class="field">
+										<label>Título do Subtópico:</label>
+										<p:inputText value="#{subtopico.titulo}" placeholder="Título do subtópico" style="width:100%;" />
+									</div>
+
+									<div class="field">
+										<label>Conteúdo:</label>
+										<p:textEditor secure="true" value="#{subtopico.conteudo}" height="150"
+											placeholder="Digite o conteúdo do subtópico aqui..." />
+									</div>
+
+									<div class="imagens-section">
+										<label class="imagens-label">Imagens do Subtópico:</label>
+
+										<div class="imagens-preview">
+											<ui:repeat value="#{subtopico.listaImagens}" var="subImgUrl" varStatus="subImgStatus">
+												<div class="imagem-item">
+													<img src="#{request.contextPath}#{subImgUrl}"
+														 alt="Imagem #{subImgStatus.index + 1}"
+														 class="imagem-thumb"
+														 onclick="abrirFotoAmpliada(this.src)"
+														 title="Clique para ampliar" />
+													<span class="imagem-num">Foto #{subImgStatus.index + 1}</span>
+													<p:commandButton icon="pi pi-times" styleClass="btn-remove-img"
+														action="#{relatorioBean.removerImagemSubtopico(ts.index, ss.index, subImgStatus.index)}"
+														update=":relatorioForm:topicosPanel growlMsgs" process=":relatorioForm"
+														title="Remover imagem" />
+												</div>
+											</ui:repeat>
+										</div>
+
+										<div class="upload-inline">
+											<p:fileUpload mode="simple" value="#{relatorioBean.imagemSubtopicoUpload}"
+												skinSimple="true" accept=".jpg,.jpeg,.png,.gif" chooseLabel="Escolher Foto" />
+											<p:commandButton value="Adicionar Foto"
+												action="#{relatorioBean.uploadImagemSubtopico()}"
+												update=":relatorioForm:topicosPanel growlMsgs"
+												process=":relatorioForm" styleClass="btn-upload-img" icon="pi pi-image">
+												<f:setPropertyActionListener target="#{relatorioBean.subtopicoUploadTopicoIndex}" value="#{ts.index}" />
+												<f:setPropertyActionListener target="#{relatorioBean.subtopicoUploadIndex}" value="#{ss.index}" />
+											</p:commandButton>
+										</div>
+									</div>
+								</div>
+							</ui:repeat>
+
+							<div class="add-subtopico-area">
+								<p:commandButton value="+ Adicionar Subtópico"
+									action="#{relatorioBean.adicionarSubtopico(ts.index)}"
+									update=":relatorioForm:topicosPanel growlMsgs"
+									process=":relatorioForm"
+									styleClass="btn-add-subtopico" icon="pi pi-plus" />
+							</div>
+						</div>
+					</ui:repeat>
+				</p:outputPanel>
+
+				<div class="add-topico-area">
+					<p:commandButton value="+ Adicionar Tópico"
+						action="#{relatorioBean.adicionarNovoTopico()}"
+						update=":relatorioForm:topicosPanel growlMsgs"
+						process=":relatorioForm"
+						styleClass="btn-add-topico" icon="pi pi-plus-circle" />
+				</div>
+			</div>
+
+			<div class="buttons">
+				<p:commandButton value="Salvar Relatório"
+					action="#{relatorioBean.salvar()}" update="@form growlMsgs"
+					styleClass="btn btn-primary" icon="pi pi-save"
+					 />
+			</div>
+
+		</h:form>
+	</div>
+
+	<!-- LIGHTBOX para ampliar foto -->
+	<div id="lightboxFoto" class="lightbox-overlay" onclick="this.style.display='none'">
+	    <img id="lightboxImg" src="" alt="Foto ampliada" class="lightbox-img" />
+	    <span class="lightbox-fechar" onclick="document.getElementById('lightboxFoto').style.display='none'">&#10005;</span>
+	</div>
+	</ui:define>
+
+	<ui:define name="scripts">
+		<h:outputScript>
+			//<![CDATA[
+			// Amplia uma imagem (fotos de campo e imagens dos topicos)
+			function abrirFotoAmpliada(src) {
+				document.getElementById('lightboxImg').src = src;
+				document.getElementById('lightboxFoto').style.display = 'flex';
+			}
+			document.addEventListener('keydown', function (e) {
+				if (e.key === 'Escape') {
+					document.getElementById('lightboxFoto').style.display = 'none';
+				}
+			});
+			//]]>
+		</h:outputScript>
+	</ui:define>
+</ui:composition>

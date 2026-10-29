@@ -1,0 +1,41 @@
+<!--
+  Cabecalho escuro com nome do sistema, usuario logado e botao Sair.
+
+  Parametros (ui:param, todos opcionais, padrao false):
+    voltar        - botao "Voltar" (para o painel) a esquerda
+    minhaConta    - link "Minha Conta" acima do nome do usuario
+    voltarPainel  - botao "Voltar ao Painel" ao lado de Sair
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<div class="header">
+		<div class="header-content">
+			<div class="header-left">
+				<ui:fragment rendered="#{voltar}">
+					<h:link outcome="/home/home.xhtml" styleClass="voltar-button" value="Voltar" />
+				</ui:fragment>
+				<div class="header-info">
+					<h1>Sistema Gerenciador de Relatórios</h1>
+					<p>Relatórios Técnicos de Atividades</p>
+				</div>
+			</div>
+			<div class="header-actions">
+				<div class="user-info">
+					<ui:fragment rendered="#{minhaConta}">
+						<h:link outcome="/conta/minhaConta.xhtml" styleClass="my-account-button" value="Minha Conta" />
+					</ui:fragment>
+					<span class="user-label">Bem-vindo(a),</span>
+					<h:outputText value="#{usuarioLogado.nome}" styleClass="username" />
+				</div>
+				<ui:fragment rendered="#{voltarPainel}">
+					<h:link outcome="/home/home.xhtml" styleClass="back-button" value="&#8592; Voltar ao Painel" />
+				</ui:fragment>
+				<h:form prependId="false" style="display: inline;">
+					<h:commandLink action="#{loginUsuarioBean.logout()}" styleClass="exit-button" value="Sair" />
+				</h:form>
+			</div>
+		</div>
+	</div>
+</ui:composition>

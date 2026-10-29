@@ -1,0 +1,16 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Página expirada" />
+	<ui:param name="mostrarRodape" value="false" />
+
+	<ui:define name="conteudo">
+		<div class="rt-erro">
+			<h1>Página expirada</h1>
+			<p>A página ficou muito tempo aberta e não pode mais ser usada. Abra-a de novo a partir do painel; o que não foi salvo precisará ser refeito.</p>
+			<h:link outcome="/home/home.xhtml" value="Ir para o painel" />
+		</div>
+	</ui:define>
+</ui:composition>

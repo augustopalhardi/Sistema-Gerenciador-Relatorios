@@ -1,0 +1,16 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Página não encontrada" />
+	<ui:param name="mostrarRodape" value="false" />
+
+	<ui:define name="conteudo">
+		<div class="rt-erro">
+			<h1>Página não encontrada</h1>
+			<p>O endereço acessado não existe ou foi removido. Confira o link ou volte ao painel.</p>
+			<h:link outcome="/home/home.xhtml" value="Ir para o painel" />
+		</div>
+	</ui:define>
+</ui:composition>

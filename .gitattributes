@@ -1,0 +1,23 @@
+# Normaliza quebras de linha no repositorio (LF); cada sistema converte no checkout
+* text=auto
+
+*.java   text diff=java
+*.xhtml  text
+*.xml    text
+*.css    text diff=css
+*.js     text
+*.md     text
+*.properties text
+
+# Scripts de shell sempre com LF
+*.sh     text eol=lf
+
+# Binarios
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.webp   binary
+*.jar    binary
+*.war    binary

@@ -1,0 +1,286 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Cadastro de Clientes" />
+	<ui:param name="css" value="css/CadastroCliente.css" />
+	<ui:param name="mostrarRodape" value="false" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-simples.xhtml">
+			<ui:param name="titulo" value="Cadastro de Clientes" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+	<div class="container">
+		<!-- Seção do Formulário -->
+		<div class="form-section">
+			<h2 class="section-title">Novo Cliente</h2>
+
+			<h:form id="cadastroForm" enctype="multipart/form-data">
+
+				<div class="form-grid">
+					<div class="field">
+						<label for="nomeEmpresa">Nome da Empresa: *</label>
+						<p:inputText id="nomeEmpresa"
+							value="#{cadastroClienteBean.nomeEmpresa}" required="true"
+							requiredMessage="Nome da empresa é obrigatório"
+							placeholder="Digite o nome da empresa" />
+					</div>
+
+					<div class="field">
+						<label for="localEmpresa">Local da Empresa:</label>
+						<p:inputText id="localEmpresa"
+							value="#{cadastroClienteBean.localEmpresa}"
+							placeholder="Cidade, Estado ou endereço" />
+					</div>
+				</div>
+
+				<div class="form-grid">
+					<div class="field">
+						<label for="cnpj">CNPJ:</label>
+						<p:inputMask id="cnpj"
+							value="#{cadastroClienteBean.cnpj}"
+							mask="99.999.999/9999-99"
+							placeholder="00.000.000/0000-00" />
+						<small class="field-hint">Campo não obrigatório</small>
+					</div>
+
+					<div class="field">
+						<label for="responsavel">Responsável:</label>
+						<p:inputText id="responsavel"
+							value="#{cadastroClienteBean.responsavel}"
+							placeholder="Nome do responsável" />
+					</div>
+				</div>
+
+				<div class="form-grid">
+					<div class="field">
+						<label for="telefone">Telefone de Contato:</label>
+						<p:inputMask id="telefone"
+							value="#{cadastroClienteBean.telefone}"
+							mask="(99) 99999-9999"
+							placeholder="(00) 00000-0000" />
+					</div>
+
+					<div class="field">
+						<label for="email">Email da Empresa:</label>
+						<p:inputText id="email"
+							value="#{cadastroClienteBean.email}"
+							placeholder="contato@empresa.com.br" />
+					</div>
+				</div>
+
+				<div class="form-grid">
+					<div class="field">
+						<label for="observacoes">Observações:</label>
+						<p:inputTextarea id="observacoes"
+							value="#{cadastroClienteBean.observacoes}" rows="4"
+							placeholder="Informações adicionais sobre o cliente" />
+					</div>
+
+					<div class="field">
+						<label for="logo">Logo da Empresa:</label>
+						<div class="upload-section">
+							<p:fileUpload id="logo" mode="simple"
+								value="#{cadastroClienteBean.uploadedLogo}" skinSimple="true"
+								accept=".jpg,.jpeg,.png,.gif,.svg" chooseLabel="Selecionar Logo" />
+							<p><small>Formatos aceitos: JPG, JPEG, PNG, GIF, SVG (máx. 5MB)</small></p>
+						</div>
+					</div>
+				</div>
+
+				<div class="buttons">
+					<p:commandButton value="Salvar Cliente"
+						action="#{cadastroClienteBean.salvarNovo()}"
+						update="cadastroForm listaForm growlMsgs"
+						styleClass="btn btn-primary"
+						icon="pi pi-save" />
+
+					<p:commandButton value="Limpar Campos"
+						action="#{cadastroClienteBean.limpar()}"
+						update="cadastroForm"
+						process="@this"
+						resetValues="true"
+						styleClass="btn btn-secondary"
+						icon="pi pi-refresh" />
+				</div>
+			</h:form>
+		</div>
+
+		<!-- Seção da Lista -->
+		<div class="list-section">
+			<h2 class="section-title">Clientes Cadastrados</h2>
+
+			<h:form id="listaForm">
+
+				<p:dataTable value="#{cadastroClienteBean.cadastroClientes}" var="cliente"
+					paginator="true" rows="10"
+					sortBy="#{cliente.nomeEmpresa}" sortOrder="ascending"
+					emptyMessage="Nenhum cliente cadastrado no sistema"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					currentPageReportTemplate="Exibindo {startRecord} a {endRecord} de {totalRecords} clientes">
+
+					<p:column headerText="ID" sortBy="#{cliente.id}"
+						style="width: 60px; text-align: center;">
+						<h:outputText value="#{cliente.id}" />
+					</p:column>
+
+					<p:column headerText="Empresa" sortBy="#{cliente.nomeEmpresa}"
+						filterBy="#{cliente.nomeEmpresa}" filterMatchMode="contains">
+						<div class="empresa-cell">
+							<!-- img HTML puro: evita que o JSF trate a URL como resource interno -->
+							<ui:fragment rendered="#{cliente.urlLogo != null and cliente.urlLogo != ''}">
+								<img src="#{request.contextPath}/uploads/clientes/#{cliente.urlLogo}"
+									class="logo-thumbnail"
+									alt="Logo #{cliente.nomeEmpresa}"
+									onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+							</ui:fragment>
+							<span class="logo-placeholder"
+								style="#{cliente.urlLogo != null and cliente.urlLogo != '' ? 'display:none' : 'display:flex'}">
+								<i class="pi pi-building" />
+							</span>
+							<h:outputText value="#{cliente.nomeEmpresa}" />
+						</div>
+					</p:column>
+
+					<p:column headerText="Local" sortBy="#{cliente.localEmpresa}"
+						filterBy="#{cliente.localEmpresa}" filterMatchMode="contains">
+						<h:outputText value="#{cliente.localEmpresa}" />
+					</p:column>
+
+					<p:column headerText="CNPJ" style="width: 170px;">
+						<h:outputText value="#{cliente.cnpj}" />
+					</p:column>
+
+					<p:column headerText="Responsável" sortBy="#{cliente.responsavel}"
+						filterBy="#{cliente.responsavel}" filterMatchMode="contains">
+						<h:outputText value="#{cliente.responsavel}" />
+					</p:column>
+
+					<p:column headerText="Telefone" style="width: 150px;">
+						<h:outputText value="#{cliente.telefone}" />
+					</p:column>
+
+					<p:column headerText="Email">
+						<h:outputText value="#{cliente.email}" />
+					</p:column>
+
+					<p:column headerText="Ações" style="width: 140px; text-align: center;">
+						<p:commandButton value="Editar"
+							action="#{cadastroClienteBean.prepararEdicao(cliente)}"
+							update=":dialogForm growlMsgs"
+						resetValues="true"
+							styleClass="ui-button-secondary"
+							icon="pi pi-pencil"
+							title="Editar cliente"
+							oncomplete="PF('editarDialog').show();" />
+
+						<p:commandButton value="Excluir"
+							action="#{cadastroClienteBean.excluir(cliente)}"
+							update=":listaForm growlMsgs"
+							styleClass="ui-button-danger"
+							icon="pi pi-trash"
+							title="Excluir cliente"
+							onclick="return confirm('Tem certeza que deseja excluir o cliente #{cliente.nomeEmpresa}?');"
+							 />
+					</p:column>
+				</p:dataTable>
+			</h:form>
+		</div>
+	</div>
+
+	<p:dialog header="Editar Cliente" widgetVar="editarDialog"
+		modal="true" width="750"
+		closable="true" resizable="false"
+		responsive="true" appendTo="@(body)"
+		dynamic="false">
+
+		<h:form id="dialogForm" enctype="multipart/form-data">
+			<!-- ID do cliente em edicao: diz ao salvar() que e uma alteracao -->
+			<h:inputHidden value="#{cadastroClienteBean.clienteEditandoId}" />
+
+			<div class="dialog-form-grid">
+				<div class="dialog-field">
+					<label for="dNomeEmpresa">Nome da Empresa: *</label>
+					<p:inputText id="dNomeEmpresa"
+						value="#{cadastroClienteBean.nomeEmpresa}"
+						required="true" requiredMessage="Nome da empresa é obrigatório"
+						placeholder="Nome da empresa" />
+				</div>
+
+				<div class="dialog-field">
+					<label for="dLocalEmpresa">Local da Empresa:</label>
+					<p:inputText id="dLocalEmpresa"
+						value="#{cadastroClienteBean.localEmpresa}"
+						placeholder="Cidade, Estado ou endereço" />
+				</div>
+
+				<div class="dialog-field">
+					<label for="dCnpj">CNPJ:</label>
+					<p:inputMask id="dCnpj"
+						value="#{cadastroClienteBean.cnpj}"
+						mask="99.999.999/9999-99" />
+				</div>
+
+				<div class="dialog-field">
+					<label for="dResponsavel">Responsável:</label>
+					<p:inputText id="dResponsavel"
+						value="#{cadastroClienteBean.responsavel}"
+						placeholder="Nome do responsável" />
+				</div>
+
+				<div class="dialog-field">
+					<label for="dTelefone">Telefone:</label>
+					<p:inputMask id="dTelefone"
+						value="#{cadastroClienteBean.telefone}"
+						mask="(99) 99999-9999" />
+				</div>
+
+				<div class="dialog-field">
+					<label for="dEmail">Email:</label>
+					<p:inputText id="dEmail"
+						value="#{cadastroClienteBean.email}"
+						placeholder="contato@empresa.com.br" />
+				</div>
+
+				<div class="dialog-field dialog-field-full">
+					<label for="dObservacoes">Observações:</label>
+					<p:inputTextarea id="dObservacoes"
+						value="#{cadastroClienteBean.observacoes}" rows="3"
+						placeholder="Informações adicionais sobre o cliente" />
+				</div>
+
+				<div class="dialog-field dialog-field-full">
+					<label for="dLogo">Atualizar Logo:</label>
+					<p:fileUpload id="dLogo" mode="simple"
+						value="#{cadastroClienteBean.uploadedLogo}" skinSimple="true"
+						accept=".jpg,.jpeg,.png,.gif,.svg" chooseLabel="Selecionar Novo Logo" />
+					<small>Deixe vazio para manter o logo atual</small>
+				</div>
+			</div>
+
+			<div class="dialog-buttons">
+				<p:commandButton value="Salvar Alterações"
+					action="#{cadastroClienteBean.salvar()}"
+					update=":listaForm :cadastroForm growlMsgs"
+					styleClass="btn btn-primary"
+					icon="pi pi-save"
+					oncomplete="if (args &amp;&amp; args.salvo) { PF('editarDialog').hide(); }" />
+
+				<p:commandButton value="Cancelar"
+					action="#{cadastroClienteBean.limpar()}"
+					process="@this"
+					update="@none"
+					oncomplete="PF('editarDialog').hide();"
+					styleClass="btn btn-secondary"
+					icon="pi pi-times" />
+			</div>
+		</h:form>
+	</p:dialog>
+	</ui:define>
+</ui:composition>

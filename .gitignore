@@ -1,0 +1,30 @@
+# Build
+target/
+
+# Configuracao real (credenciais) - so o .example vai para o repositorio
+config.properties
+
+# Uploads locais
+relatorios-uploads/
+uploads/
+
+# Logs
+*.log
+logs/
+
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+bin/
+
+# IntelliJ / VS Code
+.idea/
+*.iml
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

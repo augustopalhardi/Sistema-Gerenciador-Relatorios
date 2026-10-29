@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!--
+  Layout comum de todas as telas.
+
+  Parametros (ui:param):
+    titulo        - titulo da aba do navegador (antes de " - Sistema Gerenciador de Relatórios")
+    css           - CSS da tela, ex.: "css/Home.css" (opcional)
+    mostrarRodape - false para telas sem rodape (padrao: true)
+
+  Areas (ui:define):
+    head       - itens extras do <head> (opcional)
+    cabecalho  - cabecalho da tela (ver /WEB-INF/includes)
+    conteudo   - corpo da tela
+    scripts    - scripts da tela, no fim do <body> (opcional)
+
+  Tambem oferece a todas as telas: mensagens (p:growl id="growlMsgs"),
+  dialogo de confirmacao global (p:confirm) e tratamento de erro em AJAX.
+-->
+<html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="icon" href="#{resource['imagens/favicon.ico']}" type="image/x-icon" />
+	<title>#{titulo} - Sistema Gerenciador de Relatórios</title>
+	<h:outputStylesheet name="css/Tema.css" />
+	<h:outputStylesheet name="#{css}" rendered="#{not empty css}" />
+	<ui:insert name="head" />
+</h:head>
+
+<h:body>
+	<p:growl id="growlMsgs" life="4500" sticky="false" showDetail="true" showSummary="true" />
+
+	<ui:insert name="cabecalho" />
+
+	<ui:insert name="conteudo" />
+
+	<ui:fragment rendered="#{mostrarRodape ne false}">
+		<div class="footer">
+			<p>Sistema Gerenciador de Relatórios</p>
+		</div>
+	</ui:fragment>
+
+	<!-- confirmacao usada por todos os <p:confirm> das telas -->
+	<p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="440">
+		<p:commandButton value="Confirmar" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+		<p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+			icon="pi pi-times" />
+	</p:confirmDialog>
+
+	<!-- erros em requisicoes AJAX (sem isso a tela simplesmente nao reage) -->
+	<p:ajaxExceptionHandler type="javax.faces.application.ViewExpiredException"
+		onexception="PF('dlgPaginaExpirada').show();" />
+	<p:ajaxExceptionHandler onexception="PF('dlgErroInesperado').show();" />
+
+	<p:dialog widgetVar="dlgPaginaExpirada" header="Página expirada" modal="true" closable="false"
+		resizable="false" responsive="true">
+		<p class="rt-dialogo-texto">Esta página ficou muito tempo aberta e expirou. Recarregue para continuar;
+			o que não foi salvo precisará ser refeito.</p>
+		<div class="rt-dialogo-acoes">
+			<p:commandButton type="button" value="Recarregar" onclick="window.location.reload();" icon="pi pi-refresh" />
+		</div>
+	</p:dialog>
+
+	<p:dialog widgetVar="dlgErroInesperado" header="Erro inesperado" modal="true" resizable="false"
+		responsive="true">
+		<p class="rt-dialogo-texto">Não foi possível concluir a operação por um erro no servidor. Tente
+			novamente; se o problema continuar, recarregue a página ou contate o administrador.</p>
+		<div class="rt-dialogo-acoes">
+			<p:commandButton type="button" value="Recarregar" onclick="window.location.reload();" icon="pi pi-refresh"
+				styleClass="ui-button-secondary" />
+			<p:commandButton type="button" value="Fechar" onclick="PF('dlgErroInesperado').hide();" />
+		</div>
+	</p:dialog>
+
+	<ui:insert name="scripts" />
+</h:body>
+</html>

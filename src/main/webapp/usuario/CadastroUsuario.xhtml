@@ -1,0 +1,239 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Gerenciar Usuários" />
+	<ui:param name="css" value="css/CadastroUsuario.css" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-simples.xhtml">
+			<ui:param name="titulo" value="Gerenciar Usuários" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+	<div class="container">
+
+		<!-- Seção do Formulário (Novo Usuário) -->
+		<div class="form-section">
+			<h2 class="section-title">Novo Usuário</h2>
+
+			<h:form id="cadastroForm">
+
+				<div class="form-grid">
+					<div class="field">
+						<label for="nome">Nome Completo: *</label>
+						<p:inputText id="nome"
+							value="#{cadastroUsuarioBean.nome}"
+							required="true"
+							requiredMessage="Nome é obrigatório"
+							placeholder="Digite o nome completo" />
+					</div>
+
+					<div class="field">
+						<label for="email">E-mail: *</label>
+						<p:inputText id="email"
+							value="#{cadastroUsuarioBean.email}"
+							required="true"
+							requiredMessage="E-mail é obrigatório"
+							placeholder="usuario@empresa.com.br" />
+					</div>
+				</div>
+
+				<div class="form-grid">
+					<div class="field">
+						<label for="senha">Senha: *</label>
+						<h:inputSecret id="senha"
+							value="#{cadastroUsuarioBean.senha}"
+							required="true"
+							requiredMessage="Senha é obrigatória para novos usuários"
+							placeholder="Digite a senha"
+							styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"
+							redisplay="false" />
+					</div>
+
+					<div class="field">
+						<label for="funcao">Função / Cargo:</label>
+						<p:inputText id="funcao"
+							value="#{cadastroUsuarioBean.funcao}"
+							placeholder="Ex: Engenheiro, Técnico, Analista..." />
+					</div>
+				</div>
+
+
+				<div class="buttons">
+					<p:commandButton value="Salvar Usuário"
+						action="#{cadastroUsuarioBean.salvarNovo()}"
+						update="cadastroForm listaForm growlMsgs"
+						styleClass="btn btn-primary"
+						icon="pi pi-save" />
+
+					<p:commandButton value="Limpar Campos"
+						action="#{cadastroUsuarioBean.limpar()}"
+						update="cadastroForm"
+						process="@this"
+						resetValues="true"
+						styleClass="btn btn-secondary"
+						icon="pi pi-refresh" />
+				</div>
+			</h:form>
+		</div>
+
+		<!-- Seção da Lista -->
+		<div class="list-section">
+			<h2 class="section-title">Usuários Cadastrados</h2>
+
+			<h:form id="listaForm">
+
+				<p:dataTable id="tabelaUsuarios"
+					value="#{cadastroUsuarioBean.cadastroUsuarios}"
+					var="usuario"
+					paginator="true"
+					rows="10"
+					sortBy="#{usuario.nome}"
+					sortOrder="ascending"
+					emptyMessage="Nenhum usuário cadastrado no sistema"
+					paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+					currentPageReportTemplate="Exibindo {startRecord} a {endRecord} de {totalRecords} usuários">
+
+					<p:column headerText="ID"
+						sortBy="#{usuario.id}"
+						style="width: 60px; text-align: center;">
+						<h:outputText value="#{usuario.id}" />
+					</p:column>
+
+					<p:column headerText="Nome"
+						sortBy="#{usuario.nome}"
+						filterBy="#{usuario.nome}"
+						filterMatchMode="contains">
+						<div class="usuario-cell">
+							<span class="avatar">
+								<h:outputText value="#{usuario.nome.substring(0,1).toUpperCase()}" />
+							</span>
+							<h:outputText value="#{usuario.nome}" />
+						</div>
+					</p:column>
+
+					<p:column headerText="E-mail"
+						sortBy="#{usuario.email}"
+						filterBy="#{usuario.email}"
+						filterMatchMode="contains">
+						<h:outputText value="#{usuario.email}" />
+					</p:column>
+
+					<p:column headerText="Função"
+						sortBy="#{usuario.funcao}"
+						filterBy="#{usuario.funcao}"
+						filterMatchMode="contains">
+						<h:outputText value="#{usuario.funcao != null and usuario.funcao != '' ? usuario.funcao : '—'}" />
+					</p:column>
+
+					<p:column headerText="Tipo"
+						sortBy="#{usuario.tipoUsuario}"
+						style="width: 130px; text-align: center;">
+						<span class="badge-tipo
+							#{usuario.tipoUsuario.name() == 'ADMINISTRADOR' ? 'badge-admin' :
+							  usuario.tipoUsuario.name() == 'TECNICO' ? 'badge-tecnico' : 'badge-funcionario'}">
+							<h:outputText value="#{usuario.tipoUsuario.descricao}" />
+						</span>
+					</p:column>
+
+					<p:column headerText="Ações"
+						style="width: 155px; text-align: center;">
+
+						<p:commandButton value="Editar"
+							action="#{cadastroUsuarioBean.prepararEdicao(usuario)}"
+							update="dialogUsuarioForm growlMsgs"
+							resetValues="true"
+							styleClass="ui-button-secondary"
+							icon="pi pi-pencil"
+							title="Editar usuário"
+							oncomplete="PF('editarUsuarioDialog').show();" />
+
+						<p:commandButton value="Excluir"
+							action="#{cadastroUsuarioBean.excluir(usuario)}"
+							update=":listaForm growlMsgs"
+							styleClass="ui-button-danger"
+							icon="pi pi-trash"
+							title="Excluir usuário">
+							<p:confirm header="Excluir usuário"
+								message="Excluir o usuário &quot;#{usuario.nome}&quot;? Esta ação não pode ser desfeita."
+								icon="pi pi-exclamation-triangle" />
+						</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+			</h:form>
+		</div>
+
+	</div>
+
+	<p:dialog header="Editar Usuário" widgetVar="editarUsuarioDialog"
+		modal="true" width="700"
+		closable="true" resizable="false"
+		responsive="true" appendTo="@(body)"
+		dynamic="true">
+
+		<h:form id="dialogUsuarioForm">
+
+			<div class="dialog-form-grid">
+				<div class="dialog-field">
+					<label for="dNome">Nome Completo: *</label>
+					<p:inputText id="dNome"
+						value="#{cadastroUsuarioBean.nome}"
+						required="true"
+						requiredMessage="Nome é obrigatório"
+						placeholder="Nome completo" />
+				</div>
+
+				<div class="dialog-field">
+					<label for="dEmail">E-mail: *</label>
+					<p:inputText id="dEmail"
+						value="#{cadastroUsuarioBean.email}"
+						required="true"
+						requiredMessage="E-mail é obrigatório"
+						placeholder="usuario@empresa.com.br" />
+				</div>
+
+				<div class="dialog-field">
+					<label for="dSenha">Nova Senha:</label>
+					<h:inputSecret id="dSenha"
+						value="#{cadastroUsuarioBean.senha}"
+						placeholder="Deixe em branco para manter a senha atual"
+						styleClass="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all"
+						redisplay="false" />
+					<span class="field-hint-small">Deixe em branco para não alterar a senha</span>
+				</div>
+
+				<div class="dialog-field">
+					<label for="dFuncao">Função / Cargo:</label>
+					<p:inputText id="dFuncao"
+						value="#{cadastroUsuarioBean.funcao}"
+						placeholder="Ex: Engenheiro, Técnico, Analista..." />
+				</div>
+
+			</div>
+
+			<div class="dialog-buttons">
+				<p:commandButton value="Salvar Alterações"
+					action="#{cadastroUsuarioBean.salvar()}"
+					update=":listaForm :cadastroForm growlMsgs"
+					styleClass="btn btn-primary"
+					icon="pi pi-save"
+					oncomplete="if (args &amp;&amp; args.salvo) { PF('editarUsuarioDialog').hide(); }" />
+
+				<p:commandButton value="Cancelar"
+					action="#{cadastroUsuarioBean.limpar()}"
+					process="@this"
+					update="@none"
+					oncomplete="PF('editarUsuarioDialog').hide();"
+					styleClass="btn btn-secondary"
+					icon="pi pi-times" />
+			</div>
+		</h:form>
+	</p:dialog>
+	</ui:define>
+</ui:composition>

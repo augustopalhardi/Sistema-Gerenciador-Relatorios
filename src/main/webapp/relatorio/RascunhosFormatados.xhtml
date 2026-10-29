@@ -1,0 +1,182 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Rascunhos Formatados" />
+	<ui:param name="css" value="css/RascunhosFormatados.css" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-painel.xhtml">
+			<ui:param name="voltar" value="true" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+	<!-- ===== CONTEÚDO ===== -->
+	<div class="container">
+
+		<div class="page-header">
+			<h2 class="page-title"><span>&#128221;</span> Rascunhos Formatados</h2>
+			<h:link outcome="/relatorio/VerificarRelatorio.xhtml" styleClass="btn-novo-relatorio">
+				&#43; Nova Formatação
+			</h:link>
+		</div>
+
+		<!-- ===== TOGGLE RASCUNHOS / FORMATADOS ===== -->
+		<div class="toggle-bar">
+			<h:link outcome="/relatorio/Rascunhos.xhtml" styleClass="toggle-btn">
+				&#128196; Rascunhos Simples
+			</h:link>
+			<h:link outcome="/relatorio/RascunhosFormatados.xhtml" styleClass="toggle-btn toggle-active">
+				&#128221; Rascunhos Formatados
+			</h:link>
+		</div>
+
+		<!-- ===== BARRA DE BUSCA ===== -->
+		<h:form id="formBusca" prependId="false">
+			<div class="search-bar">
+				<span class="search-icon">&#128269;</span>
+				<h:inputText id="busca"
+							 value="#{rascunhosFormatadosBean.termoBusca}"
+							 placeholder="Buscar por título do rascunho ou cliente..."
+							 styleClass="search-input" />
+				<p:commandButton id="btnBuscar"
+								 value="Buscar"
+								 action="#{rascunhosFormatadosBean.filtrar()}"
+								 update="listaRascunhos growlMsgs"
+								 styleClass="btn-buscar" />
+				<p:commandButton value="Limpar"
+								 action="#{rascunhosFormatadosBean.limparBusca()}"
+								 update="listaRascunhos busca growlMsgs"
+								 styleClass="btn-limpar-busca"
+								 process="@this" />
+			</div>
+		</h:form>
+
+		<!-- ===== LISTA ===== -->
+		<h:panelGroup id="listaRascunhos" layout="block">
+
+			<div class="resultado-info">
+				<h:outputText value="#{rascunhosFormatadosBean.rascunhosFiltrados.size()} rascunho(s) formatado(s) encontrado(s)" />
+			</div>
+
+			<!-- GRID DE CARDS -->
+			<h:panelGroup rendered="#{not empty rascunhosFormatadosBean.rascunhosFiltrados}">
+				<div class="relatorios-grid">
+					<ui:repeat value="#{rascunhosFormatadosBean.rascunhosFiltrados}" var="rf">
+
+						<div class="relatorio-card">
+
+							<!-- Faixa topo com menu 3 pontinhos -->
+							<div class="card-header-strip">
+								<h:form prependId="false">
+									<div class="menu-dots-wrap">
+										<button type="button" class="btn-dots"
+												onclick="toggleMenu(this)"
+												aria-label="Mais opções">&#8942;</button>
+										<div class="dropdown-menu">
+											<p:commandButton value="&#128465; Excluir"
+													action="#{rascunhosFormatadosBean.excluirRascunho(rf)}"
+													update=":listaRascunhos growlMsgs"
+													styleClass="dropdown-item dropdown-item-danger"
+													process="@this">
+													<p:confirm header="Excluir" message="Deseja excluir este rascunho formatado? Esta ação não pode ser desfeita." icon="pi pi-exclamation-triangle" />
+												</p:commandButton>
+										</div>
+									</div>
+								</h:form>
+							</div>
+
+							<div class="card-body">
+								<div class="card-title-row">
+									<span class="card-icon-rel">&#128221;</span>
+									<h3 class="card-titulo">
+										<h:outputText value="#{rf.tituloRascunho != null and rf.tituloRascunho != '' ? rf.tituloRascunho : 'Sem título'}" />
+									</h3>
+								</div>
+
+								<div class="card-meta">
+
+									<div class="meta-item">
+										<span class="meta-label">&#128196; Relatório base:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rf.relatorio != null and rf.relatorio.titulo != null ? rf.relatorio.titulo : '—'}" />
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#127970; Empresa:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rf.relatorio != null and rf.relatorio.cliente != null ? rf.relatorio.cliente.nomeEmpresa : '—'}" />
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#128100; Registrado por:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rf.usuarioRegistro != null and rf.usuarioRegistro != '' ? rf.usuarioRegistro : '—'}" />
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#128336; Criado em:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rf.dataCriacao}">
+												<f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+											</h:outputText>
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#128260; Atualizado em:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rf.dataAtualizacao}" rendered="#{rf.dataAtualizacao != null}">
+												<f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+											</h:outputText>
+											<h:outputText value="—" rendered="#{rf.dataAtualizacao == null}" />
+										</span>
+									</div>
+
+								</div>
+
+								<div class="card-badge-row">
+									<span class="badge-formatado">&#128221; Formatado</span>
+								</div>
+							</div>
+
+							<div class="card-actions">
+								<h:form prependId="false">
+									<p:commandButton value="&#9998; Editar"
+													 action="#{rascunhosFormatadosBean.abrirRascunho(rf.id)}"
+													 styleClass="btn-editar"
+													 ajax="false" />
+								</h:form>
+							</div>
+						</div>
+
+					</ui:repeat>
+				</div>
+			</h:panelGroup>
+
+			<h:panelGroup rendered="#{empty rascunhosFormatadosBean.rascunhosFiltrados}" layout="block" styleClass="empty-state">
+				<div class="empty-icon">&#128221;</div>
+				<h3>Nenhum rascunho formatado encontrado</h3>
+				<p>
+					<h:outputText rendered="#{not empty rascunhosFormatadosBean.termoBusca}"
+								  value="Nenhum resultado para a busca. Tente outros termos." />
+					<h:outputText rendered="#{empty rascunhosFormatadosBean.termoBusca}"
+								  value="Ainda não há rascunhos formatados. Crie um a partir da tela de verificação de relatório." />
+				</p>
+				<h:link outcome="/relatorio/VerificarRelatorio.xhtml" styleClass="btn-novo-relatorio">
+					&#43; Nova Formatação
+				</h:link>
+			</h:panelGroup>
+
+		</h:panelGroup>
+
+	</div>
+	</ui:define>
+</ui:composition>

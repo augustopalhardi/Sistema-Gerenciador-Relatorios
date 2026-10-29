@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Log da aplicacao (SLF4J -> Log4j 2). Em producao fica em INFO; para depurar
+  localmente, troque o nivel do logger "com.augustopalhardi.relatorios" para DEBUG
+  e, se precisar ver o SQL, o de "org.hibernate.SQL" para DEBUG.
+-->
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.augustopalhardi.relatorios" level="info"/>
+        <Logger name="org.hibernate" level="warn"/>
+        <Logger name="org.hibernate.SQL" level="warn"/>
+        <Logger name="com.mchange" level="warn"/>
+        <Logger name="org.jboss.weld" level="warn"/>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,197 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Rascunhos de Relatórios" />
+	<ui:param name="css" value="css/Rascunhos.css" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-painel.xhtml">
+			<ui:param name="voltar" value="true" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+	<!-- ===== CONTEÚDO ===== -->
+	<div class="container">
+
+		<div class="page-header">
+			<h2 class="page-title"><span>&#128196;</span> Rascunhos de Relatórios</h2>
+			<h:link outcome="/relatorio/Relatorio.xhtml" styleClass="btn-novo-relatorio">
+				&#43; Novo Relatório
+			</h:link>
+		</div>
+
+		<!-- ===== TOGGLE RASCUNHOS / FORMATADOS ===== -->
+		<div class="toggle-bar">
+			<h:link outcome="/relatorio/Rascunhos.xhtml" styleClass="toggle-btn toggle-active">
+				&#128196; Rascunhos Simples
+			</h:link>
+			<h:link outcome="/relatorio/RascunhosFormatados.xhtml" styleClass="toggle-btn">
+				&#128221; Rascunhos Formatados
+			</h:link>
+		</div>
+
+		<!-- ===== BARRA DE BUSCA ===== -->
+		<h:form id="formBusca" prependId="false">
+			<div class="search-bar">
+				<span class="search-icon">&#128269;</span>
+				<h:inputText id="busca"
+							 value="#{rascunhosBean.termoBusca}"
+							 placeholder="Buscar por título, cliente ou responsável técnico..."
+							 styleClass="search-input" />
+				<p:commandButton id="btnBuscar"
+								 value="Buscar"
+								 action="#{rascunhosBean.filtrar()}"
+								 update="listaRelatorios growlMsgs"
+								 styleClass="btn-buscar" />
+				<p:commandButton value="Limpar"
+								 action="#{rascunhosBean.limparBusca()}"
+								 update="listaRelatorios busca growlMsgs"
+								 styleClass="btn-limpar-busca"
+								 process="@this" />
+			</div>
+		</h:form>
+
+		<!-- ===== LISTA ===== -->
+		<h:panelGroup id="listaRelatorios" layout="block">
+
+			<div class="resultado-info">
+				<h:outputText value="#{rascunhosBean.relatoriosFiltrados.size()} relatório(s) encontrado(s)" />
+			</div>
+
+			<!-- GRID DE CARDS -->
+			<h:panelGroup rendered="#{not empty rascunhosBean.relatoriosFiltrados}">
+				<div class="relatorios-grid">
+					<ui:repeat value="#{rascunhosBean.relatoriosFiltrados}" var="rel">
+
+						<div class="relatorio-card">
+							<div class="card-header-strip">
+								<h:form prependId="false">
+									<div class="menu-dots-wrap">
+										<button type="button" class="btn-dots"
+												onclick="toggleMenu(this)"
+												aria-label="Mais opções">&#8942;</button>
+										<div class="dropdown-menu">
+											<p:commandButton value="&#10064; Duplicar"
+													action="#{rascunhosBean.duplicarRelatorio(rel)}"
+													update=":listaRelatorios growlMsgs"
+													styleClass="dropdown-item"
+													process="@this" />
+											<p:commandButton value="&#128465; Excluir"
+													action="#{rascunhosBean.excluirRelatorio(rel)}"
+													update=":listaRelatorios growlMsgs"
+													styleClass="dropdown-item dropdown-item-danger"
+													process="@this">
+													<p:confirm header="Excluir" message="Deseja excluir o relatório? Esta ação não pode ser desfeita." icon="pi pi-exclamation-triangle" />
+												</p:commandButton>
+										</div>
+									</div>
+								</h:form>
+							</div>
+
+							<div class="card-body">
+								<div class="card-title-row">
+									<span class="card-icon-rel">&#128196;</span>
+									<h3 class="card-titulo">
+										<h:outputText value="#{rel.titulo != null and rel.titulo != '' ? rel.titulo : 'Sem título'}" />
+									</h3>
+								</div>
+
+								<div class="card-meta">
+
+									<div class="meta-item">
+										<span class="meta-label">&#127970; Empresa:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rel.cliente != null ? rel.cliente.nomeEmpresa : '—'}" />
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#128736; Resp. Técnico:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rel.responsavelTecnico != null and rel.responsavelTecnico != '' ? rel.responsavelTecnico : '—'}" />
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#128101; Resp. Cliente:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rel.responsavelTecCliente != null and rel.responsavelTecCliente != '' ? rel.responsavelTecCliente : '—'}" />
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#128197; Período:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rel.dataInicio}">
+												<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputText>
+											<h:outputText value=" — " rendered="#{rel.dataTermino != null}" />
+											<h:outputText value="#{rel.dataTermino}" rendered="#{rel.dataTermino != null}">
+												<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputText>
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#128336; Criado em:</span>
+										<span class="meta-value">
+											<h:outputText value="#{rel.dataCriacao}">
+												<f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+											</h:outputText>
+										</span>
+									</div>
+
+									<div class="meta-item">
+										<span class="meta-label">&#128203; Tópicos:</span>
+										<span class="meta-value badge-topicos">
+											<h:outputText value="#{rel.topicos.size()}" />
+										</span>
+									</div>
+
+								</div>
+
+								<h:panelGroup rendered="#{rel.observacao != null and rel.observacao != ''}">
+									<div class="card-obs">
+										<h:outputText value="#{rel.observacao}" />
+									</div>
+								</h:panelGroup>
+							</div>
+
+							<div class="card-actions">
+								<h:form prependId="false">
+									<p:commandButton value="&#9998; Editar"
+													 action="#{rascunhosBean.abrirRelatorio(rel.id)}"
+													 styleClass="btn-editar"
+													 ajax="false" />
+								</h:form>
+							</div>
+						</div>
+
+					</ui:repeat>
+				</div>
+			</h:panelGroup>
+
+			<h:panelGroup rendered="#{empty rascunhosBean.relatoriosFiltrados}" layout="block" styleClass="empty-state">
+				<div class="empty-icon">&#128196;</div>
+				<h3>Nenhum relatório encontrado</h3>
+				<p>
+					<h:outputText rendered="#{not empty rascunhosBean.termoBusca}"
+								  value="Nenhum resultado para a busca. Tente outros termos." />
+					<h:outputText rendered="#{empty rascunhosBean.termoBusca}"
+								  value="Ainda não há relatórios cadastrados. Crie o primeiro agora!" />
+				</p>
+				<h:link outcome="/relatorio/Relatorio.xhtml" styleClass="btn-novo-relatorio">
+					&#43; Criar Relatório
+				</h:link>
+			</h:panelGroup>
+
+		</h:panelGroup>
+
+	</div>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,232 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Painel Principal" />
+	<ui:param name="css" value="css/Home.css" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-painel.xhtml">
+			<ui:param name="minhaConta" value="true" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+	<div class="container">
+		<div class="hero-section">
+
+			<!-- ===== BANNER FOTO DE CAMPO ===== -->
+			<div class="campo-banner">
+				<div class="campo-banner-bg"></div>
+				<div class="campo-banner-content">
+					<div class="campo-banner-left">
+						<div class="campo-pulse-wrap">
+							<span class="campo-pulse-ring"></span>
+							<span class="campo-icon">&#128247;</span>
+						</div>
+						<div class="campo-texto">
+							<span class="campo-tag">AO VIVO DO CAMPO</span>
+							<h2 class="campo-titulo">Está em campo?</h2>
+							<p class="campo-desc">Fotografe agora e vincule direto ao relatório. A imagem fica salva esperando você montar o documento.</p>
+						</div>
+					</div>
+					<h:form id="formAbrirDialog" prependId="false">
+						<p:commandButton
+							value="&#128247; Enviar Foto de Campo"
+							onclick="PF('dialogFotoCampo').show(); return false;"
+							type="button"
+							styleClass="btn-campo-banner" />
+					</h:form>
+				</div>
+			</div>
+
+			<h2 class="hero-title">O que deseja fazer?</h2>
+
+			<div class="hero-grid">
+
+				<!-- Card Relatórios -->
+				<div class="hero-card card-relatorios">
+					<div class="card-icon">
+						<span>&#128196;</span>
+					</div>
+					<h3>Relatórios Técnicos</h3>
+					<p>Crie e gerencie relatórios técnicos de atividades com tópicos, subtópicos, imagens e formatação rica.</p>
+
+					<div class="hero-buttons">
+						<h:link outcome="/relatorio/Relatorio.xhtml"
+							styleClass="hero-btn btn-relatorios"
+							value="Novo Relatório" />
+					</div>
+				</div>
+
+				<!-- Card Rascunhos -->
+				<div class="hero-card card-rascunhos">
+					<div class="card-icon">
+						<span>&#128203;</span>
+					</div>
+					<h3>Rascunhos</h3>
+					<p>Visualize, edite e gerencie todos os relatórios criados. Retome de onde parou e continue editando.</p>
+
+					<div class="hero-buttons">
+						<h:link outcome="/relatorio/Rascunhos.xhtml"
+							styleClass="hero-btn btn-rascunhos"
+							value="Ver Rascunhos" />
+					</div>
+				</div>
+
+				<!-- Card Cadastro de Clientes -->
+				<div class="hero-card card-cadastros">
+					<div class="card-icon">
+						<span>&#128101;</span>
+					</div>
+					<h3>Cadastro de Clientes</h3>
+					<p>Cadastre, edite e consulte os clientes do sistema para vinculá-los aos relatórios técnicos.</p>
+
+					<div class="hero-buttons">
+						<h:link outcome="/cliente/CadastroCliente.xhtml"
+							styleClass="hero-btn btn-cadastros"
+							value="Acessar Cadastros" />
+					</div>
+				</div>
+
+				<!-- Card Formatar Relatório -->
+				<div class="hero-card card-verificar">
+					<div class="card-icon">
+						<span>&#128214;</span>
+					</div>
+					<h3>Formatar Relatório</h3>
+					<p>Selecione um relatório salvo, formate-o no padrão da sua empresa e edite o documento antes de imprimir ou exportar como PDF.</p>
+
+					<div class="hero-buttons">
+						<h:link outcome="/relatorio/VerificarRelatorio.xhtml"
+							styleClass="hero-btn btn-verificar"
+							value="Formatar Relatório" />
+					</div>
+				</div>
+
+				<!-- Card Minha Empresa -->
+				<div class="hero-card card-empresa">
+					<div class="card-icon">
+						<span>&#127970;</span>
+					</div>
+					<h3>Minha Empresa</h3>
+					<p>Configure o nome, logo, telefone, email e demais dados da sua empresa que aparecem nos relatórios técnicos.</p>
+
+					<div class="hero-buttons">
+						<h:link outcome="/empresa/DadosEmpresa.xhtml"
+							styleClass="hero-btn btn-empresa"
+							value="Configurar Empresa" />
+					</div>
+				</div>
+
+				<!-- Card Gerenciar Usuários -->
+				<div class="hero-card card-usuarios">
+					<div class="card-icon">
+						<span>&#128100;</span>
+					</div>
+					<h3>Gerenciar Usuários</h3>
+					<p>Cadastre, edite e remova usuários do sistema, defina funções e tipos de acesso para cada membro da equipe.</p>
+
+					<div class="hero-buttons">
+						<h:link outcome="/usuario/CadastroUsuario.xhtml"
+							styleClass="hero-btn btn-usuarios"
+							value="Gerenciar Usuários" />
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- ===== DIALOG: UPLOAD RÁPIDO DE FOTO DE CAMPO ===== -->
+	<p:dialog header="📷 Enviar Foto de Campo"
+		widgetVar="dialogFotoCampo"
+		modal="true"
+		responsive="true"
+		width="480"
+		closable="true"
+		styleClass="dialog-foto-campo">
+
+		<h:form id="formFotoCampo" enctype="multipart/form-data" prependId="false">
+
+			<p:messages id="msgsFotoCampo" showDetail="true" closable="true" />
+
+			<div class="dialog-campo-group">
+				<label class="dialog-label">&#128247; Foto *</label>
+				<p:fileUpload
+					id="fotoInput"
+					value="#{fotoCampoBean.fotoUpload}"
+					mode="simple"
+					skinSimple="true"
+					accept="image/*"
+					chooseLabel="Escolher foto / tirar foto"
+					styleClass="upload-foto-campo" />
+				<span class="dialog-dica">No celular, você pode tirar uma foto diretamente pela câmera.</span>
+			</div>
+
+			<div class="dialog-campo-group">
+				<label class="dialog-label">&#128196; Relatório *</label>
+				<h:selectOneMenu
+					id="relatorioSelect"
+					value="#{fotoCampoBean.relatorioSelecionadoId}"
+					styleClass="dialog-select">
+					<f:selectItem itemLabel="-- Selecione o relatório --" itemValue="#{null}" noSelectionOption="true" />
+					<f:selectItems
+						value="#{fotoCampoBean.relatoriosDisponiveis}"
+						var="rel"
+						itemValue="#{rel.id}"
+						itemLabel="#{rel.titulo != null and rel.titulo != '' ? rel.titulo : 'Sem título'} #{rel.cliente != null ? '(' += rel.cliente.nomeEmpresa += ')' : ''}" />
+				</h:selectOneMenu>
+			</div>
+
+			<div class="dialog-campo-group">
+				<label class="dialog-label">&#128172; Legenda (opcional)</label>
+				<h:inputText
+					id="legendaInput"
+					value="#{fotoCampoBean.legendaFoto}"
+					placeholder="Ex: Painel elétrico do bloco B, terceiro andar..."
+					styleClass="dialog-input-text"
+					maxlength="500" />
+			</div>
+
+			<div class="dialog-botoes">
+				<p:commandButton
+					value="&#128190; Enviar Foto"
+					action="#{fotoCampoBean.uploadFotoCampo()}"
+					update="msgsFotoCampo relatorioSelect legendaInput"
+					process="formFotoCampo"
+					styleClass="btn-enviar-foto"
+					icon="pi pi-upload"
+					oncomplete="if (args &amp;&amp; args.salvo) { limparDialogoFoto(); }" />
+				<p:commandButton
+					value="Fechar"
+					onclick="PF('dialogFotoCampo').hide(); return false;"
+					type="button"
+					styleClass="btn-fechar-dialog" />
+			</div>
+
+		</h:form>
+	</p:dialog>
+	</ui:define>
+
+	<ui:define name="scripts">
+		<h:outputScript>
+			//<![CDATA[
+			// Depois de um envio bem-sucedido, limpa o dialogo para a proxima foto
+			function limparDialogoFoto() {
+				var arquivo = document.querySelector('#formFotoCampo input[type="file"]');
+				if (arquivo) {
+					arquivo.value = '';
+				}
+				var nomeArquivo = document.querySelector('#formFotoCampo .ui-fileupload-filename');
+				if (nomeArquivo) {
+					nomeArquivo.textContent = '';
+				}
+			}
+			//]]>
+		</h:outputScript>
+	</ui:define>
+</ui:composition>

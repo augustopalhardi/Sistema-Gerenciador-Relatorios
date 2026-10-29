@@ -1,0 +1,425 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	background-color: var(--rt-fundo-pagina);
+	color: var(--rt-texto);
+	line-height: 1.6;
+}
+
+/* Header */
+.header {
+	background: var(--rt-escuro);
+	color: white;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 2rem 0;
+	text-align: center;
+	position: relative;
+}
+
+.header h1 {
+	margin: 0;
+	font-size: 1.75rem;
+	font-weight: 600;
+	color: white;
+}
+
+.header-actions {
+	position: absolute;
+	top: 1.5rem;
+	left: 2rem;
+}
+
+.exit-button {
+	padding: 0.75rem 1.5rem;
+	background: transparent;
+	color: white;
+	text-decoration: none;
+	border-radius: 4px;
+	font-weight: 500;
+	font-size: 0.9375rem;
+	transition: all 0.2s ease;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	cursor: pointer;
+	display: inline-block;
+}
+
+.exit-button:hover {
+	background: rgba(255, 255, 255, 0.1);
+	border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Container */
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+/* Form Section */
+.form-section {
+	background: white;
+	border: 1px solid var(--rt-borda);
+	border-radius: 4px;
+	padding: 2rem;
+	margin-bottom: 3rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+	font-size: 1.3rem;
+	color: var(--rt-escuro-2);
+	border-bottom: 2px solid var(--rt-borda);
+	padding-bottom: 0.5rem;
+	margin-bottom: 2rem;
+	font-weight: 600;
+}
+
+/* Form Grid */
+.form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.field {
+	margin-bottom: 0.5rem;
+}
+
+.field label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	color: var(--rt-escuro-2);
+	font-size: 0.9rem;
+}
+
+.field-hint {
+	display: block;
+	color: var(--rt-cinza-500);
+	font-size: 0.8125rem;
+	margin-top: 0.25rem;
+	font-style: italic;
+}
+
+/* Inputs */
+.ui-inputfield,
+.ui-selectonemenu,
+.ui-inputtextarea,
+.ui-password-panel,
+.ui-inputnumber-input {
+	width: 100% !important;
+	padding: 0.75rem !important;
+	border: 1px solid var(--rt-borda-forte) !important;
+	border-radius: 4px !important;
+	font-size: 0.9rem !important;
+	transition: all 0.2s ease !important;
+}
+
+.ui-inputfield:focus,
+.ui-selectonemenu:focus,
+.ui-inputtextarea:focus,
+.ui-inputnumber-input:focus {
+	border-color: var(--rt-primaria) !important;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+	outline: none !important;
+}
+
+/* Botões */
+.buttons {
+	text-align: center;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--rt-borda);
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.btn {
+	padding: 0.8rem 1.8rem !important;
+	border-radius: 4px !important;
+	border: 1px solid transparent !important;
+	font-weight: 500 !important;
+	cursor: pointer !important;
+	font-size: 0.9rem !important;
+	transition: all 0.2s ease !important;
+}
+
+.btn-primary {
+	background-color: var(--rt-sucesso) !important;
+	color: white !important;
+	border-color: var(--rt-sucesso) !important;
+}
+
+.btn-primary:hover {
+	background-color: var(--rt-sucesso-escura) !important;
+	border-color: var(--rt-sucesso-escura) !important;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 8px rgba(22, 163, 74, 0.3) !important;
+}
+
+.btn-secondary {
+	background-color: var(--rt-cinza-500) !important;
+	color: white !important;
+	border-color: var(--rt-cinza-500) !important;
+}
+
+.btn-secondary:hover {
+	background-color: var(--rt-cinza-700) !important;
+	border-color: var(--rt-cinza-700) !important;
+	transform: translateY(-1px);
+}
+
+.btn-info {
+	background-color: var(--rt-primaria) !important;
+	color: white !important;
+	border-color: var(--rt-primaria) !important;
+}
+
+.btn-info:hover {
+	background-color: var(--rt-primaria-escura) !important;
+	border-color: var(--rt-primaria-escura) !important;
+	transform: translateY(-1px);
+}
+
+/* List Section */
+.list-section {
+	background: white;
+	border: 1px solid var(--rt-borda);
+	border-radius: 4px;
+	padding: 2rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Avatar na tabela */
+.usuario-cell {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.avatar {
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: var(--rt-primaria);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 0.875rem;
+	flex-shrink: 0;
+}
+
+/* Badges de tipo */
+.badge-tipo {
+	display: inline-block;
+	padding: 0.25rem 0.75rem;
+	border-radius: 9999px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+.badge-admin {
+	background-color: #fef3c7;
+	color: #92400e;
+	border: 1px solid #fcd34d;
+}
+
+.badge-tecnico {
+	background-color: #dbeafe;
+	color: var(--rt-azul-escuro);
+	border: 1px solid #93c5fd;
+}
+
+.badge-funcionario {
+	background-color: #d1fae5;
+	color: #065f46;
+	border: 1px solid #6ee7b7;
+}
+
+/* Messages */
+.ui-messages {
+	margin-bottom: 1.5rem !important;
+	border-radius: 4px !important;
+}
+
+.ui-messages .ui-messages-error {
+	background-color: #fecaca !important;
+	border: 1px solid var(--rt-perigo) !important;
+	color: #7f1d1d !important;
+}
+
+.ui-messages .ui-messages-info {
+	background-color: #bfdbfe !important;
+	border: 1px solid var(--rt-primaria) !important;
+	color: #1e3a8a !important;
+}
+
+.ui-messages .ui-messages-success {
+	background-color: #bbf7d0 !important;
+	border: 1px solid var(--rt-sucesso) !important;
+	color: #14532d !important;
+}
+
+.ui-messages .ui-messages-warn {
+	background-color: #fed7aa !important;
+	border: 1px solid #ea580c !important;
+	color: #7c2d12 !important;
+}
+
+/* DataTable */
+.ui-datatable {
+	border: 1px solid var(--rt-borda) !important;
+	border-radius: 4px !important;
+	overflow: hidden;
+}
+
+.ui-datatable thead th {
+	background: var(--rt-fundo-suave) !important;
+	color: var(--rt-escuro-2) !important;
+	font-weight: 600 !important;
+	padding: 0.75rem !important;
+	border-bottom: 2px solid var(--rt-borda) !important;
+}
+
+.ui-datatable .ui-datatable-data tr {
+	border-bottom: 1px solid var(--rt-borda) !important;
+	transition: background-color 0.2s ease;
+}
+
+.ui-datatable .ui-datatable-data tr:hover {
+	background-color: var(--rt-fundo-suave) !important;
+}
+
+.ui-datatable .ui-datatable-data td {
+	padding: 0.75rem !important;
+	color: var(--rt-escuro-2) !important;
+}
+
+/* Botões da tabela */
+.ui-button {
+	font-size: 0.8125rem !important;
+	padding: 0.5rem 1rem !important;
+	margin: 0 0.25rem !important;
+	border-radius: 4px !important;
+	transition: all 0.2s ease !important;
+}
+
+.ui-button-secondary {
+	background-color: var(--rt-cinza-500) !important;
+	border-color: var(--rt-cinza-500) !important;
+}
+
+.ui-button-secondary:hover {
+	background-color: var(--rt-cinza-700) !important;
+	transform: translateY(-1px);
+}
+
+.ui-button-danger {
+	background-color: var(--rt-perigo) !important;
+	border-color: var(--rt-perigo) !important;
+}
+
+.ui-button-danger:hover {
+	background-color: var(--rt-perigo-escura) !important;
+	transform: translateY(-1px);
+}
+
+/* Footer */
+.footer {
+	text-align: center;
+	padding: 2rem;
+	color: var(--rt-cinza-500);
+	font-size: 0.875rem;
+	border-top: 1px solid var(--rt-borda);
+	margin-top: 2rem;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+	.container {
+		padding: 1rem;
+	}
+
+	.header {
+		padding: 1.5rem 1rem;
+	}
+
+	.header h1 {
+		font-size: 1.25rem;
+	}
+
+	.header-actions {
+		position: relative;
+		top: auto;
+		left: auto;
+		text-align: center;
+		margin-top: 1rem;
+	}
+
+	.exit-button {
+		display: block;
+		width: 200px;
+		margin: 0 auto;
+	}
+
+	.form-section,
+	.list-section {
+		padding: 1.5rem;
+	}
+
+	.form-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.buttons {
+		flex-direction: column;
+	}
+
+	.buttons .btn {
+		width: 100%;
+		margin: 0.5rem 0 !important;
+	}
+
+	.ui-button {
+		font-size: 0.75rem !important;
+		padding: 0.375rem 0.75rem !important;
+	}
+}
+
+/* ===== Ajustes da tela (antes num <style> da propria pagina) ===== */
+/* Dialog de edição de usuário */
+.dialog-form-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem 1.5rem;
+	padding: 0.5rem 0;
+}
+.dialog-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.dialog-field label { font-weight: 600; font-size: 0.875rem; color: var(--rt-cinza-700); }
+.dialog-field .ui-inputfield,
+.dialog-field .ui-inputtextarea,
+.dialog-field .ui-selectonemenu { width: 100% !important; }
+.dialog-field-full { grid-column: 1 / -1; }
+.dialog-buttons {
+	display: flex;
+	gap: 0.75rem;
+	justify-content: flex-end;
+	margin-top: 1.25rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--rt-borda);
+}
+.field-hint-small {
+	font-size: 0.78rem;
+	color: var(--rt-cinza-500);
+	margin-top: 0.2rem;
+}

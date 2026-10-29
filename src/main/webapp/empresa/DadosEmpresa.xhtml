@@ -1,0 +1,162 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Minha Empresa" />
+	<ui:param name="css" value="css/DadosEmpresa.css" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-painel.xhtml">
+			<ui:param name="voltar" value="true" />
+			<ui:param name="minhaConta" value="true" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+    <div class="de-container">
+
+        <div class="de-page-header">
+            <h2 class="de-page-title"><span>&#127970;</span> Minha Empresa</h2>
+            <p class="de-page-desc">Configure as informações da sua empresa que aparecerão nos relatórios técnicos.</p>
+        </div>
+
+        <h:form id="empresaForm" enctype="multipart/form-data">
+
+            <!-- SEÇÃO: DADOS BASICOS -->
+            <div class="de-section">
+                <div class="de-section-title">
+                    <span class="de-section-icon">&#128205;</span>
+                    Dados Básicos
+                </div>
+                <div class="de-grid">
+                    <div class="de-field">
+                        <label>Nome da Empresa:</label>
+                        <p:inputText value="#{dadosEmpresaBean.dados.nomeEmpresa}"
+                            maxlength="300" placeholder="Ex: Empresa Exemplo Ltda"
+                            styleClass="de-input" />
+                    </div>
+                    <div class="de-field">
+                        <label>CNPJ:</label>
+                        <p:inputText value="#{dadosEmpresaBean.dados.cnpj}"
+                            maxlength="20" placeholder="00.000.000/0000-00"
+                            styleClass="de-input" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO: CONTATO -->
+            <div class="de-section">
+                <div class="de-section-title">
+                    <span class="de-section-icon">&#128222;</span>
+                    Contato
+                </div>
+                <div class="de-grid">
+                    <div class="de-field">
+                        <label>Telefone Principal:</label>
+                        <p:inputText value="#{dadosEmpresaBean.dados.telefonePrincipal}"
+                            maxlength="30" placeholder="(11) 9 9999-9999"
+                            styleClass="de-input" />
+                    </div>
+                    <div class="de-field">
+                        <label>Email de Contato:</label>
+                        <p:inputText value="#{dadosEmpresaBean.dados.emailContato}"
+                            maxlength="200" placeholder="contato@empresa.com"
+                            styleClass="de-input" />
+                    </div>
+                    <div class="de-field">
+                        <label>Email Comercial:</label>
+                        <p:inputText value="#{dadosEmpresaBean.dados.emailComercial}"
+                            maxlength="200" placeholder="comercial@empresa.com"
+                            styleClass="de-input" />
+                    </div>
+                    <div class="de-field">
+                        <label>Site:</label>
+                        <p:inputText value="#{dadosEmpresaBean.dados.site}"
+                            maxlength="300" placeholder="www.empresa.com"
+                            styleClass="de-input" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO: LOGO E VISUAL -->
+            <div class="de-section">
+                <div class="de-section-title">
+                    <span class="de-section-icon">&#127912;</span>
+                    Logo da Empresa
+                </div>
+
+                <div class="de-logo-area">
+                    <h:panelGroup rendered="#{dadosEmpresaBean.logoExistente}">
+                        <div class="de-logo-preview">
+                            <label>Logo atual:</label>
+                            <div class="de-logo-img-box">
+                                <h:graphicImage value="/uploads/empresa/#{dadosEmpresaBean.dados.urlLogo}"
+                                    styleClass="de-logo-img" alt="Logo da empresa" />
+                            </div>
+                            <p:commandButton value="Remover Logo"
+                                action="#{dadosEmpresaBean.removerLogo()}"
+                                update="empresaForm growlMsgs"
+                                styleClass="de-btn-remover-logo"
+                                process="@this">
+                                <p:confirm header="Remover logo" message="Remover o logo atual da empresa?"
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </div>
+                    </h:panelGroup>
+
+                    <div class="de-upload-area">
+                        <label>Enviar novo logo:</label>
+                        <p:fileUpload id="logoUpload" mode="simple"
+                            value="#{dadosEmpresaBean.uploadedLogo}" skinSimple="true"
+                            accept=".jpg,.jpeg,.png,.gif,.webp,.svg" chooseLabel="Selecionar Logo" />
+                        <p><small>Formatos aceitos: JPG, PNG, GIF, WEBP, SVG (máx. 5 MB). Recomendado fundo transparente.</small></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTÕES -->
+            <div class="de-actions">
+                <p:commandButton value="Salvar Dados da Empresa"
+                    action="#{dadosEmpresaBean.salvar()}"
+                    update="empresaForm growlMsgs"
+                    styleClass="de-btn-salvar"
+                    icon="pi pi-save" />
+            </div>
+
+        </h:form>
+
+        <!-- PREVIEW -->
+        <div class="de-preview-section">
+            <h3 class="de-preview-title">Pré-visualização no Relatório</h3>
+            <div class="de-preview-box">
+                <div class="de-preview-header">
+                    <div class="de-preview-contact">
+                        <strong><h:outputText value="#{dadosEmpresaBean.dados.nomeEmpresa}" /></strong><br />
+                        <h:outputText value="#{dadosEmpresaBean.dados.telefonePrincipal}" /> |
+                        <h:outputText value="#{dadosEmpresaBean.dados.emailContato}" /> |
+                        <h:outputText value="#{dadosEmpresaBean.dados.site}" />
+                    </div>
+                </div>
+                <div class="de-preview-assinatura">
+                    <div class="de-preview-linha"></div>
+                    <span><h:outputText value="#{dadosEmpresaBean.dados.nomeEmpresa}" /></span><br />
+                    <small>
+                        <h:outputText value="#{dadosEmpresaBean.dados.telefonePrincipal}" /> |
+                        <h:outputText value="#{dadosEmpresaBean.dados.emailComercial}" />
+                    </small><br />
+                    <small><h:outputText value="#{dadosEmpresaBean.dados.site}" /></small>
+                </div>
+                <div class="de-preview-rodape">
+                    <h:outputText value="#{dadosEmpresaBean.dados.telefonePrincipal}" /> |
+                    <h:outputText value="#{dadosEmpresaBean.dados.emailContato}" /> |
+                    <h:outputText value="#{dadosEmpresaBean.dados.site}" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+	</ui:define>
+</ui:composition>

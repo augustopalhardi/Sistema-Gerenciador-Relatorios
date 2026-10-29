@@ -1,0 +1,172 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Minha Conta" />
+	<ui:param name="css" value="css/MinhaConta.css" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-painel.xhtml">
+			<ui:param name="voltarPainel" value="true" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+    <!-- ===== CONTEÚDO ===== -->
+    <div class="container">
+
+        <h2 class="page-title">
+            <span>&#128100;</span> Minha Conta
+        </h2>
+
+        <!-- ===== CARD: PERFIL / FOTO ===== -->
+        <h:panelGroup id="perfilHeader" layout="block" styleClass="perfil-header">
+
+            <div class="avatar-wrapper">
+                <h:panelGroup rendered="#{empty minhaContaBean.usuarioLogado.urlFoto}">
+                    <div class="avatar avatar-inicial">
+                        <h:outputText value="#{minhaContaBean.inicialNome}" />
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{not empty minhaContaBean.usuarioLogado.urlFoto}">
+                    <h:graphicImage value="#{minhaContaBean.usuarioLogado.urlFoto}"
+                                    styleClass="avatar avatar-foto"
+                                    alt="Foto de perfil" />
+                </h:panelGroup>
+            </div>
+
+            <div class="perfil-info">
+                <h2><h:outputText value="#{minhaContaBean.usuarioLogado.nome}" /></h2>
+                <div class="perfil-funcao">
+                    <h:outputText value="#{minhaContaBean.usuarioLogado.funcao}" />
+                </div>
+                <span class="badge-tipo">
+                    <h:outputText value="#{minhaContaBean.usuarioLogado.tipoUsuario.descricao}" />
+                </span>
+            </div>
+
+            <div class="foto-upload-area">
+                <h:form id="formFoto" enctype="multipart/form-data" prependId="false">
+                    <div class="upload-label">Foto de Perfil</div>
+
+                    <p:fileUpload id="fotoInput"
+                                  value="#{minhaContaBean.fotoUpload}"
+                                  mode="simple"
+                                  skinSimple="true"
+                                  accept="image/*"
+                                  label="Escolher imagem"
+                                  styleClass="upload-input" />
+
+                    <div class="upload-btn-group">
+                        <p:commandButton value="&#128190; Salvar Foto"
+                                         action="#{minhaContaBean.uploadFoto()}"
+                                         update="perfilHeader growlMsgs"
+                                         styleClass="btn-upload" />
+
+                        <p:commandButton value="&#128465; Remover"
+                                         action="#{minhaContaBean.removerFoto()}"
+                                         update="perfilHeader growlMsgs"
+                                         styleClass="btn-remover-foto"
+                                         rendered="#{not empty minhaContaBean.usuarioLogado.urlFoto}">
+                            <p:confirm header="Remover foto" message="Remover sua foto de perfil?"
+                                       icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+                    </div>
+
+                    <div class="upload-hint">JPG, PNG ou GIF · máx. 5 MB</div>
+                </h:form>
+            </div>
+
+        </h:panelGroup>
+
+        <!-- ===== CARD: DADOS PESSOAIS ===== -->
+        <div class="form-card">
+            <div class="form-card-title">&#9999;&#65039; Dados Pessoais</div>
+
+            <h:form id="formDadosPessoais" prependId="false">
+
+                <div class="form-group">
+                    <label for="nome">Nome Completo *</label>
+                    <h:inputText id="nome"
+                                 value="#{minhaContaBean.nome}"
+                                 required="true"
+                                 requiredMessage="Nome é obrigatório"
+                                 maxlength="150" />
+                    <h:message for="nome" styleClass="field-error" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">E-mail *</label>
+                        <h:inputText id="email"
+                                     value="#{minhaContaBean.email}"
+                                     required="true"
+                                     requiredMessage="E-mail é obrigatório"
+                                     maxlength="200" />
+                        <h:message for="email" styleClass="field-error" />
+                    </div>
+                    <div class="form-group">
+                        <label for="funcao">Função / Cargo</label>
+                        <h:inputText id="funcao"
+                                     value="#{minhaContaBean.funcao}"
+                                     maxlength="100" />
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <p:commandButton value="&#10003; Salvar Alterações"
+                                     action="#{minhaContaBean.salvarDadosPessoais()}"
+                                     update="formDadosPessoais perfilHeader growlMsgs"
+                                     styleClass="btn-salvar" />
+                </div>
+
+            </h:form>
+        </div>
+
+        <!-- ===== CARD: ALTERAR SENHA ===== -->
+        <div class="form-card">
+            <div class="form-card-title">&#128274; Alterar Senha</div>
+
+            <h:form id="formSenha" prependId="false">
+
+                <div class="form-group">
+                    <label for="senhaAtual">Senha Atual *</label>
+                    <h:inputSecret id="senhaAtual"
+                                   value="#{minhaContaBean.senhaAtual}"
+                                   maxlength="200"
+                                   redisplay="false" />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="novaSenha">Nova Senha *</label>
+                        <h:inputSecret id="novaSenha"
+                                       value="#{minhaContaBean.novaSenha}"
+                                       maxlength="200"
+                                       redisplay="false" />
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmarSenha">Confirmar Nova Senha *</label>
+                        <h:inputSecret id="confirmarSenha"
+                                       value="#{minhaContaBean.confirmarNovaSenha}"
+                                       maxlength="200"
+                                       redisplay="false" />
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <p:commandButton value="&#128274; Alterar Senha"
+                                     action="#{minhaContaBean.alterarSenha()}"
+                                     update="formSenha growlMsgs"
+                                     styleClass="btn-salvar" />
+                </div>
+
+            </h:form>
+        </div>
+
+    </div>
+	</ui:define>
+</ui:composition>

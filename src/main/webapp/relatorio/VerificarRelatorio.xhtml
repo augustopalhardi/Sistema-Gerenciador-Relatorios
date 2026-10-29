@@ -1,0 +1,190 @@
+<ui:composition template="/WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+	<ui:param name="titulo" value="Formatar Relatório" />
+	<ui:param name="css" value="css/VerificarRelatorio.css" />
+	<ui:param name="mostrarRodape" value="false" />
+
+	<ui:define name="cabecalho">
+		<ui:include src="/WEB-INF/includes/cabecalho-painel.xhtml">
+			<ui:param name="voltar" value="true" />
+			<ui:param name="minhaConta" value="true" />
+		</ui:include>
+	</ui:define>
+
+	<ui:define name="conteudo">
+    <div class="vr-container">
+
+        <h:form id="selecaoForm">
+            <div class="vr-selecao-panel">
+                <div class="vr-selecao-titulo">Formatar Relatório</div>
+                <div class="vr-field">
+                    <label for="relSelect">Selecione o relatório:</label>
+                    <h:selectOneMenu id="relSelect"
+                                     value="#{verificarRelatorioBean.relatorioSelecionadoId}"
+                                     styleClass="vr-select">
+                        <f:selectItem itemValue="" itemLabel="-- Selecione um relatório --" />
+                        <f:selectItems value="#{verificarRelatorioBean.relatorios}"
+                                       var="rel"
+                                       itemValue="#{rel.id}"
+                                       itemLabel="#{empty rel.titulo ? '(sem título)' : rel.titulo} - #{rel.cliente != null ? rel.cliente.nomeEmpresa : '-'}" />
+                    </h:selectOneMenu>
+                </div>
+                <div class="vr-actions">
+                    <p:commandButton id="btnFormatar"
+                                     value="Formatar Relatório"
+                                     action="#{verificarRelatorioBean.formatarRelatorio()}"
+                                     update="@form editorSection growlMsgs"
+                                     styleClass="vr-btn-formatar"
+                                     process="@form"
+                                     oncomplete="inicializarFotos()" />
+                    <p:commandButton id="btnFechar"
+                                     value="Fechar Editor"
+                                     action="#{verificarRelatorioBean.fecharEditor()}"
+                                     update="@form editorSection growlMsgs"
+                                     process="@this"
+                                     rendered="#{verificarRelatorioBean.editorVisivel}"
+                                     styleClass="vr-btn-fechar">
+                        <p:confirm header="Fechar o editor"
+                                   message="Alterações que não foram salvas no rascunho serão perdidas. Deseja fechar o editor?"
+                                   icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
+                </div>
+                <div class="vr-info-box">
+                    <span>Selecione um relatório e clique em Formatar para editar.</span>
+                </div>
+            </div>
+        </h:form>
+
+        <h:panelGroup id="editorSection">
+            <ui:fragment rendered="#{verificarRelatorioBean.editorVisivel}">
+                <div class="vr-editor-section">
+
+                    <div class="vr-toolbar">
+
+                        <div class="vr-tb-grupo">
+                            <span class="vr-toolbar-title">Histórico</span>
+                            <button type="button" id="btnUndo" class="vr-tb-btn vr-tb-undo" onclick="acaoUndo()" title="Desfazer (Ctrl+Z)">&#8592; Desfazer</button>
+                            <button type="button" id="btnRedo" class="vr-tb-btn vr-tb-redo" onclick="acaoRedo()" title="Refazer (Ctrl+Y)">Refazer &#8594;</button>
+                        </div>
+
+                        <span class="vr-toolbar-sep"></span>
+
+                        <div class="vr-tb-grupo">
+                            <span class="vr-toolbar-title">Texto</span>
+                            <button type="button" class="vr-tb-btn" onclick="execCmd('bold')"><b>N</b></button>
+                            <button type="button" class="vr-tb-btn vr-italic" onclick="execCmd('italic')"><i>I</i></button>
+                            <button type="button" class="vr-tb-btn vr-underline" onclick="execCmd('underline')"><u>S</u></button>
+                            <button type="button" class="vr-tb-btn" onclick="execFontMaior()">A+</button>
+                            <button type="button" class="vr-tb-btn" onclick="execFontMenor()">A-</button>
+                            <button type="button" class="vr-tb-btn" onclick="execCmd('justifyLeft')">Esquerda</button>
+                            <button type="button" class="vr-tb-btn" onclick="execCmd('justifyCenter')">Centro</button>
+                            <button type="button" class="vr-tb-btn" onclick="execCmd('justifyFull')">Justificar</button>
+                            <button type="button" class="vr-tb-btn" onclick="abrirCorTexto()">Cor</button>
+                            <input type="color" id="colorPicker" value="#d97706"
+                                   onchange="aplicarCor(this.value)"
+                                   style="position:absolute;opacity:0;width:0;height:0;" />
+                        </div>
+
+                        <span class="vr-toolbar-sep"></span>
+
+                        <div class="vr-tb-grupo">
+                            <span class="vr-toolbar-title">Fotos</span>
+                            <button type="button" class="vr-tb-btn vr-tb-foto" onclick="alterarColunasGrid(1)">1 col</button>
+                            <button type="button" class="vr-tb-btn vr-tb-foto" onclick="alterarColunasGrid(2)">2 col</button>
+                            <button type="button" class="vr-tb-btn vr-tb-foto" onclick="alterarColunasGrid(3)">3 col</button>
+                            <button type="button" class="vr-tb-btn vr-tb-crop" id="btnCrop" onclick="toggleModoCrop()">Cortar Foto</button>
+                            <button type="button" class="vr-tb-btn vr-tb-girar" onclick="girarFoto90()" title="Girar foto 90° para a direita">&#8635; Girar 90°</button>
+                            <button type="button" class="vr-tb-btn vr-tb-excluir-foto" onclick="excluirFotoSelecionada()" title="Excluir foto selecionada">&#128465; Excluir Foto</button>
+                        </div>
+
+                        <span class="vr-toolbar-sep"></span>
+
+                        <div class="vr-tb-grupo">
+                            <span class="vr-toolbar-title">Formas</span>
+                            <span id="fotoAtivaLabel" class="foto-ativa-label">Clique em uma foto</span>
+                            <button type="button" class="vr-tb-btn vr-tb-forma" onclick="inserirForma('quadrado')" title="Quadrado">&#9633;</button>
+                            <button type="button" class="vr-tb-btn vr-tb-forma" onclick="inserirForma('circulo')" title="Círculo">&#9675;</button>
+                            <button type="button" class="vr-tb-btn vr-tb-forma" onclick="inserirForma('oval')" title="Oval">&#11053;</button>
+                            <button type="button" class="vr-tb-btn vr-tb-forma" onclick="inserirForma('seta-dir')" title="Seta">&#10140;</button>
+                            <div class="vr-cor-forma-wrapper" onclick="document.getElementById('corForma').click();" title="Cor da forma">
+                                <div id="corFormaCirculo" class="vr-cor-forma-circulo" style="background:#d97706;"></div>
+                                <input type="color" id="corForma" value="#d97706"
+                                       onchange="document.getElementById('corFormaCirculo').style.background=this.value;"
+                                       style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;" />
+                            </div>
+                            <button type="button" class="vr-tb-btn vr-tb-del-forma" onclick="removerFormaSelecionada()">Excluir Forma</button>
+                        </div>
+
+                        <div class="vr-toolbar-right">
+                            <button type="button" class="vr-tb-btn vr-tb-salvar"
+                                    onclick="sincronizarConteudo(); document.getElementById('editorForm:btnSalvarRascunho').click();"
+                                    title="Salvar rascunho formatado">
+                                &#128190; Salvar Rascunho
+                            </button>
+                            <button type="button" class="vr-tb-btn vr-tb-print" onclick="imprimirDocumento()">&#128438; Imprimir / PDF</button>
+                        </div>
+                    </div>
+
+                    <div id="cropModal" class="crop-modal" style="display:none;">
+                        <div class="crop-modal-box">
+                            <div class="crop-modal-title">Cortar Foto</div>
+                            <div class="crop-container" id="cropContainer">
+                                <img id="cropImgOriginal" src="" alt="crop" />
+                                <div id="cropSelecao" class="crop-selecao">
+                                    <div class="crop-handle crop-h-tl"></div>
+                                    <div class="crop-handle crop-h-tr"></div>
+                                    <div class="crop-handle crop-h-bl"></div>
+                                    <div class="crop-handle crop-h-br"></div>
+                                </div>
+                            </div>
+                            <div class="crop-modal-actions">
+                                <button type="button" class="vr-tb-btn" onclick="aplicarCrop()">Aplicar Corte</button>
+                                <button type="button" class="vr-tb-btn" onclick="fecharCrop()">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h:form id="editorForm">
+                        <h:inputHidden id="campoConteudoEditor"
+                                       value="#{verificarRelatorioBean.conteudoEditor}" />
+
+                        <p:commandButton id="btnSalvarRascunho"
+                                         value="Salvar"
+                                         action="#{verificarRelatorioBean.salvarRascunho()}"
+                                         update="growlMsgs"
+                                         process="editorForm"
+                                         style="display:none;" />
+
+                        <div class="vr-editor-wrapper" id="editorWrapper">
+                            <div id="rtaEditorArea"
+                                 class="vr-editor-area"
+                                 contenteditable="true"
+                                 spellcheck="false">
+                                <h:outputText value="#{verificarRelatorioBean.conteudoEditor}" escape="false" />
+                            </div>
+                        </div>
+                    </h:form>
+
+                    <div class="vr-foto-dica">
+                        Fotos: <b>clique</b> para selecionar &#8594; use as <b>setas &#9664;&#9654;</b> ou <b>arraste</b> para mover |
+                        laranja = redimensionar | verde = girar |
+                        Formas: selecione uma foto e clique no tipo | duplo clique = mudar cor |
+                        Ctrl+Z / Ctrl+Y = Desfazer / Refazer
+                    </div>
+
+                </div>
+            </ui:fragment>
+        </h:panelGroup>
+
+    </div>
+	</ui:define>
+
+	<ui:define name="scripts">
+		<h:outputScript name="js/VerificarRelatorio.js" />
+	</ui:define>
+</ui:composition>

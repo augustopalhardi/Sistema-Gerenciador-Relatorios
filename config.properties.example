@@ -1,0 +1,24 @@
+# ============================================
+# MODELO DE CONFIGURACAO - Sistema Gerenciador de Relatorios
+#
+# Copie este arquivo, renomeie para config.properties,
+# preencha os valores e salve FORA do projeto
+# (o config.properties real nunca vai para o repositorio).
+#
+# Aponte a aplicacao para ele com a system property:
+#   -Drelatorios.config.file=/caminho/para/config.properties
+#
+# Caminho padrao quando a property nao e informada:
+#   /etc/relatorios/config.properties
+# ============================================
+
+# --- Banco de dados (obrigatorio) ---
+# Valor vazio quebra igual a chave ausente.
+db.url=jdbc:mysql://localhost:3306/NOME_DO_BANCO?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+db.user=
+db.password=
+
+# --- Uploads (opcional) ---
+# Pasta onde ficam logos, fotos de relatorio e fotos de perfil.
+# Sem esta chave, usa <home do usuario>/relatorios-uploads
+# upload.dir=/caminho/para/uploads
